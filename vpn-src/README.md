@@ -71,3 +71,6 @@ boxctl 本来能执行就原样运行（不改变现有设备）；否则改用 
 
 调试日志 `boxproxy-v6.log` 写在 `<home>/run/` 下（与 `runs.log` 同目录），不再写 `/data/local/tmp`。
 每次 \`up\`/\`start\`/\`restart\` 启动服务前先清空 \`boxproxy-v6.log\`。
+
+第三版：移动网络不再沿用 boxctl 的 sysctl 禁用。`up` 前先记下移动接口的 `accept_ra`（`/data/local/tmp/.boxproxy-v6snap`），boxctl 跑完后把移动接口的 `disable_ipv6` 写回 0、`accept_ra` 还原；
+再起一个后台小循环（`/data/local/tmp/.boxproxy-v6w` 为令牌，每 3 秒检查一次），改 APN 导致数据重连、新建的移动接口也会被还原；`down` 或模式不再是“禁用”时停止并清掉这两个文件。WLAN 不受影响。
